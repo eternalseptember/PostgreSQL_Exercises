@@ -58,7 +58,7 @@ FROM cd.members AS mem
 	JOIN cd.facilities AS fac
 		ON book.facid = fac.facid
 WHERE fac.facid IN (0,1)
-ORDER BY member
+ORDER BY member;
 
 
 
@@ -81,9 +81,43 @@ AND (
 	(mem.memid = 0 AND (book.slots * fac.guestcost > 30)) OR 
 	(mem.memid > 0 AND (book.slots * fac.membercost > 30))
 	)
-ORDER BY cost DESC
+ORDER BY cost DESC;
 
 
+
+/*
+How can you output a list of all members, including the individual who recommended them (if any), without using any joins? Ensure that there are no duplicates in the list, and that each firstname + surname pairing is formatted as a column and ordered.
+*/
+
+SELECT DISTINCT mem.firstname || ' ' || mem.surname AS member, 
+	(SELECT rec.firstname || ' ' || rec.surname AS recommender
+	 FROM cd.members as rec
+	 WHERE mem.recommendedby = rec.memid)
+FROM cd.members AS mem
+ORDER BY member;
+
+
+
+/*
+The Produce a list of costly bookings exercise contained some messy logic: we had to calculate the booking cost in both the WHERE clause and the CASE statement. Try to simplify this calculation using subqueries. For reference, the question was:
+How can you produce a list of bookings on the day of 2012-09-14 which will cost the member (or guest) more than $30? Remember that guests have different costs to members (the listed costs are per half-hour 'slot'), and the guest user is always ID 0. Include in your output the name of the facility, the name of the member formatted as a single column, and the cost. Order by descending cost.
+*/
+
+SELECT member, facility, cost
+FROM 
+	(SELECT mem.firstname || ' ' || mem.surname AS member, fac.name AS facility, 
+		CASE
+			WHEN mem.memid = 0 THEN (book.slots * fac.guestcost)
+			ELSE (book.slots * fac.membercost)
+		END AS cost
+	FROM cd.bookings AS book
+		JOIN cd.members AS mem
+			ON book.memid = mem.memid
+		JOIN cd.facilities AS fac
+			ON book.facid = fac.facid
+	WHERE book.starttime > '2012-09-14' AND book.starttime < '2012-09-15') AS sub
+WHERE cost > 30
+ORDER BY cost DESC;
 
 
 
