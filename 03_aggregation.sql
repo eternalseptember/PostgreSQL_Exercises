@@ -98,7 +98,7 @@ FROM cd.bookings AS book
 JOIN cd.facilities AS fac
 	ON book.facid = fac.facid
 GROUP BY fac.name
-ORDER BY revenue
+ORDER BY revenue;
 
 
 
@@ -118,7 +118,7 @@ FROM
 		ON book.facid = fac.facid
 	GROUP BY fac.name) AS sub
 WHERE revenue < 1000
-ORDER BY revenue
+ORDER BY revenue;
 
 
 
@@ -126,7 +126,17 @@ ORDER BY revenue
 Output the facility id that has the highest number of slots booked. For bonus points, try a version without a LIMIT clause. This version will probably look messy!
 */
 
+SELECT facid, SUM(slots) AS "Total Slots"
+FROM cd.bookings
+GROUP BY facid
+ORDER BY "Total Slots" DESC
+LIMIT 1;
 
+
+
+/*
+Produce a list of the total number of slots booked per facility per month in the year of 2012. In this version, include output rows containing totals for all months per facility, and a total for all months for all facilities. The output table should consist of facility id, month and slots, sorted by the id and month. When calculating the aggregated values for all months and all facids, return null values in the month and facid columns.
+*/
 
 
 
