@@ -89,6 +89,50 @@ ORDER BY facid;
 Produce a list of facilities along with their total revenue. The output table should consist of facility name and revenue, sorted by revenue. Remember that there's a different cost for guests and members!
 */
 
+SELECT fac.name, SUM(book.slots * 
+	CASE
+		WHEN book.memid = 0 THEN fac.guestcost
+		ELSE fac.membercost
+	END) AS revenue
+FROM cd.bookings AS book
+JOIN cd.facilities AS fac
+	ON book.facid = fac.facid
+GROUP BY fac.name
+ORDER BY revenue
+
+
+
+/*
+Produce a list of facilities with a total revenue less than 1000. Produce an output table consisting of facility name and revenue, sorted by revenue. Remember that there's a different cost for guests and members!
+*/
+
+SELECT name, revenue
+FROM
+	(SELECT fac.name AS name, SUM(book.slots * 
+		CASE
+			WHEN book.memid = 0 THEN fac.guestcost
+			ELSE fac.membercost
+		END) AS revenue
+	FROM cd.bookings AS book
+	JOIN cd.facilities AS fac
+		ON book.facid = fac.facid
+	GROUP BY fac.name) AS sub
+WHERE revenue < 1000
+ORDER BY revenue
+
+
+
+/*
+Output the facility id that has the highest number of slots booked. For bonus points, try a version without a LIMIT clause. This version will probably look messy!
+*/
+
+
+
+
+
+
+
+
 
 
 
