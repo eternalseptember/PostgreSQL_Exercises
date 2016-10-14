@@ -155,6 +155,23 @@ ORDER BY facid, month
 
 
 
+/*
+Produce a list of the total number of hours booked per facility, remembering that a slot lasts half an hour. The output table should consist of the facility id, name, and hours booked, sorted by facility id. Try formatting the hours to two decimal places.
+*/
+
+SELECT book.facid, fac.name, TRIM(TO_CHAR((SUM(book.slots) * 0.5), '999.99')) AS "Total Hours"
+FROM cd.bookings AS book
+JOIN cd.facilities AS fac
+	ON book.facid = fac.facid
+GROUP BY book.facid, fac.name
+ORDER BY book.facid
+
+
+
+/*
+Produce a list of each member name, id, and their first booking after September 1st 2012. Order by member ID.
+*/
+
 
 
 
