@@ -151,7 +151,7 @@ UNION ALL
 SELECT NULL, NULL, SUM(slots) AS sum
 	FROM cd.bookings
 	WHERE EXTRACT(year FROM starttime) = 2012
-ORDER BY facid, month
+ORDER BY facid, month;
 
 
 
@@ -164,7 +164,7 @@ FROM cd.bookings AS book
 JOIN cd.facilities AS fac
 	ON book.facid = fac.facid
 GROUP BY book.facid, fac.name
-ORDER BY book.facid
+ORDER BY book.facid;
 
 
 
@@ -172,19 +172,26 @@ ORDER BY book.facid
 Produce a list of each member name, id, and their first booking after September 1st 2012. Order by member ID.
 */
 
-SELECT mem.surname, mem.firstname, mem.memid, MIN(book.starttime)
+SELECT mem.surname, mem.firstname, mem.memid, MIN(book.starttime) AS starttime
 FROM cd.members AS mem
 JOIN cd.bookings AS book
 	ON mem.memid = book.memid
 WHERE book.starttime > '2012-09-01'
 GROUP BY mem.memid
-ORDER BY memid
+ORDER BY memid;
 
 
 
 /*
 Produce a list of member names, with each row containing the total member count. Order by join date.
 */
+
+SELECT COUNT(*) OVER(), firstname, surname
+FROM cd.members
+ORDER BY joindate
+
+
+
 
 
 
