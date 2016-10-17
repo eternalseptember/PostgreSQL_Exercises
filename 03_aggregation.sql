@@ -196,8 +196,21 @@ Produce a monotonically increasing numbered list of members, ordered by their da
 */
 
 SELECT ROW_NUMBER() OVER(ORDER BY joindate), firstname, surname
-FROM cd.members
+FROM cd.members;
 
+
+
+/*
+Output the facility id that has the highest number of slots booked. Ensure that in the event of a tie, all tieing results get output.
+*/
+
+SELECT facid, slots
+FROM (
+	SELECT facid, SUM(slots) AS slots, RANK() OVER(ORDER BY SUM(slots) DESC)
+	FROM cd.bookings
+	GROUP BY facid
+	) AS sub
+WHERE rank = 1;
 
 
 
