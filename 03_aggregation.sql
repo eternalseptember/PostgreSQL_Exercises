@@ -204,13 +204,30 @@ FROM cd.members;
 Output the facility id that has the highest number of slots booked. Ensure that in the event of a tie, all tieing results get output.
 */
 
-SELECT facid, slots
+SELECT facid, total
 FROM (
-	SELECT facid, SUM(slots) AS slots, RANK() OVER(ORDER BY SUM(slots) DESC)
+	SELECT facid, SUM(slots) AS total, RANK() OVER(ORDER BY SUM(slots) DESC)
 	FROM cd.bookings
 	GROUP BY facid
 	) AS sub
 WHERE rank = 1;
+
+
+
+/*
+Produce a list of members, along with the number of hours they've booked in facilities, rounded to the nearest ten hours. Rank them by this rounded figure, producing output of first name, surname, rounded hours, rank. Sort by rank, surname, and first name.
+*/
+
+SELECT firstname, surname, hours, RANK() OVER(ORDER BY hours DESC)
+FROM(
+	SELECT mem.firstname, mem.surname, 
+		ROUND(((SUM(slots) / 2) + 5) / 10) * 10 AS hours
+	FROM cd.members AS mem
+	JOIN cd.bookings AS book
+		ON mem.memid = book.memid
+	GROUP BY mem.firstname, mem.surname) AS sub
+ORDER BY rank, surname, surname
+
 
 
 
