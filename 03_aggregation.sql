@@ -219,14 +219,15 @@ Produce a list of members, along with the number of hours they've booked in faci
 */
 
 SELECT firstname, surname, hours, RANK() OVER(ORDER BY hours DESC)
-FROM(
+FROM (
 	SELECT mem.firstname, mem.surname, 
 		ROUND(((SUM(slots) / 2) + 5) / 10) * 10 AS hours
 	FROM cd.members AS mem
 	JOIN cd.bookings AS book
 		ON mem.memid = book.memid
-	GROUP BY mem.firstname, mem.surname) AS sub
-ORDER BY rank, surname, surname
+	GROUP BY mem.firstname, mem.surname
+	) AS sub
+ORDER BY rank, surname, firstname;
 
 
 
