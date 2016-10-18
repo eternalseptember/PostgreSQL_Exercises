@@ -231,5 +231,31 @@ ORDER BY rank, surname, firstname;
 
 
 
+/*
+Produce a list of the top three revenue generating facilities (including ties). Output facility name and rank, sorted by rank and facility name.
+*/
+
+SELECT name, rank
+FROM (
+	SELECT name, RANK() OVER(ORDER BY revenue DESC)
+	FROM (
+		SELECT fac.name AS name, SUM(book.slots * 
+			CASE
+				WHEN book.memid = 0 THEN fac.guestcost
+				ELSE fac.membercost
+			END
+		) AS revenue
+		FROM cd.facilities AS fac
+		JOIN cd.bookings AS book
+			ON fac.facid = book.facid
+		GROUP BY fac.name
+		) AS sub1
+	) AS sub2
+WHERE rank < 4;
+
+
+
+
+
 
 
