@@ -255,6 +255,32 @@ WHERE rank < 4;
 
 
 
+/*
+Classify facilities into equally sized groups of high, average, and low based on their revenue. Order by classification and facility name.
+*/
+
+SELECT name, 
+	CASE
+		WHEN ntile = 1 THEN 'high'
+		WHEN ntile = 2 THEN 'average'
+		ELSE 'low'
+	END AS revenue
+FROM (	
+	SELECT name, NTILE(3) OVER(ORDER BY total_revenue DESC) AS ntile
+	FROM (
+		SELECT fac.name AS name, SUM(book.slots * 
+			CASE
+				WHEN book.memid = 0 THEN fac.guestcost
+				ELSE fac.membercost
+			END) AS total_revenue
+		FROM cd.facilities AS fac
+		JOIN cd.bookings AS book
+			ON fac.facid = book.facid
+		GROUP BY fac.name
+		) AS sub1
+	) AS sub2
+ORDER BY ntile, name;
+
 
 
 
