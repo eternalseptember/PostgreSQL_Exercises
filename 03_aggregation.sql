@@ -283,5 +283,85 @@ ORDER BY ntile, name;
 
 
 
+/*
+Based on the 3 complete months of data so far, calculate the amount of time each facility will take to repay its cost of ownership. Remember to take into account ongoing monthly maintenance. Output facility name and payback time in months, order by facility name. Don't worry about differences in month lengths, we're only looking for a rough value here!
+*/
 
+SELECT sub.name, fac.initialoutlay / ((sub.total_revenue / 3) - fac.monthlymaintenance) AS months
+FROM (
+	SELECT fac.facid AS facid, fac.name AS name, SUM(book.slots *
+		CASE
+			WHEN book.memid = 0 THEN fac.guestcost
+			ELSE fac.membercost
+		END) AS total_revenue
+	FROM cd.facilities AS fac
+	JOIN cd.bookings AS book
+		ON fac.facid = book.facid
+	GROUP BY fac.facid
+	) AS sub
+JOIN cd.facilities AS fac
+	ON sub.facid = fac.facid
+ORDER BY name;
+
+
+
+/*
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************
+			NOTES TO SELF
+*************************************/
+
+
+/*
+Total revenue per month by facility
+*/
+
+SELECT fac.name, EXTRACT(month FROM book.starttime) AS month, SUM(book.slots * 
+	CASE
+		WHEN book.memid = 0 THEN fac.guestcost
+		ELSE fac.membercost
+	END) AS revenue
+FROM cd.facilities AS fac
+JOIN cd.bookings AS book
+	ON fac.facid = book.facid
+GROUP BY fac.name, month
+ORDER BY fac.name, month;
+
+
+
+/*
+Get a table with facility name, total revenue, initial outlay, and monthly maintenance.
+*/
+
+SELECT sub.name, sub.total_revenue, fac.initialoutlay, fac.monthlymaintenance
+FROM (
+	SELECT fac.facid AS facid, fac.name AS name, SUM(book.slots *
+		CASE
+			WHEN book.memid = 0 THEN fac.guestcost
+			ELSE fac.membercost
+		END) AS total_revenue
+	FROM cd.facilities AS fac
+	JOIN cd.bookings AS book
+		ON fac.facid = book.facid
+	GROUP BY fac.facid
+	) AS sub
+JOIN cd.facilities AS fac
+	ON sub.facid = fac.facid
 
