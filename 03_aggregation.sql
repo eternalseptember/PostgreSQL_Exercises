@@ -306,10 +306,27 @@ ORDER BY name;
 
 
 /*
-
+For each day in August 2012, calculate a rolling average of total revenue over the previous 15 days. Output should contain date and revenue columns, sorted by the date. Remember to account for the possibility of a day having zero revenue. This one's a bit tough, so don't be afraid to check out the hint!
 */
 
-
+SELECT to_char(series, 'YYYY-MM-DD') AS date, sub.revenue AS revenue
+FROM generate_series('2012-08-01'::timestamp, '2012-08-31', '1 day') AS series
+JOIN (
+	SELECT date, AVG(raw_query.daily_rev) OVER (ROWS BETWEEN 14 PRECEDING AND CURRENT ROW) AS revenue
+	FROM (
+		SELECT to_char(book.starttime, 'YYYY-MM-DD') AS date, SUM(book.slots * 
+			CASE
+				WHEN book.memid = 0 THEN fac.guestcost
+				ELSE fac.membercost
+			END) AS daily_rev
+		FROM cd.bookings AS book
+		JOIN cd.facilities AS fac
+			ON book.facid = fac.facid
+		GROUP BY date
+		ORDER BY date
+		) AS raw_query
+) AS sub
+	ON sub.date::text = series.date::text
 
 
 
