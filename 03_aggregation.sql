@@ -330,7 +330,7 @@ FROM (
 			ON rev_data.date::text = series.date::text
 		) AS sub1
 	) AS sub2
-WHERE date >= '2012-08-01'
+WHERE date >= '2012-08-01';
 
 
 
